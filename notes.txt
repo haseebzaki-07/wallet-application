@@ -1,0 +1,12 @@
+done : created turbo apps
+done : tailwind 
+done : prisma
+done : db_url
+done : prisma migrations
+done : exported client from db and imported in user-app
+done : exported ui form packages and imported in user-app
+done : exported store packages db and imported in user-app
+done : recoil in packages/db
+done : adding recoil in user-app 
+done : next-auth in user-app
+
