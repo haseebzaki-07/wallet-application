@@ -20,7 +20,7 @@ model User {
   number            String              @unique
   password          String
   OnRampTransaction OnRampTransaction[]
-  Balance           Balance[] //why balance array
+  Balance           Balance[] 
   sentTransfers     p2pTransfer[]       @relation(name: "FromUserRelation")
   receivedTransfers p2pTransfer[]       @relation(name: "ToUserRelation")
 }
