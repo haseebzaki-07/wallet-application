@@ -14,6 +14,12 @@ fix : webbhook/index.ts compilation
 fix : home page double appbar
 done :added appbar client in layout.tsx
 done : dashboard/ transactions/ trasfer pages
+done : AddMoneyCard in components
+review : Select component
+fix : transfer page
+fix : login done after error and click on sign with credentials
+fix : balance is not displayed 
 
 
 
+export default function component_name

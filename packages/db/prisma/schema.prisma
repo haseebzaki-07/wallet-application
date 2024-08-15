@@ -34,7 +34,7 @@ model Merchant {
 
 model OnRampTransaction {
   id        Int          @id @default(autoincrement())
-  status    OnRampStatus
+  status    OnRampStatus  
   token     String       @unique //token
   provider  String //provider
   amount    Int
