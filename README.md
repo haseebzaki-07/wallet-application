@@ -16,9 +16,9 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
+- `user-app`: a [Next.js](https://nextjs.org/) app
+- `merchant-app`: another [Next.js](https://nextjs.org/) app
+- `@repo/ui`: a stub React component library shared by both `user-app` and `merchant-app` applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
 
@@ -79,3 +79,12 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+
+To start user-app : cd apps/user-app 
+npm run dev
+
+To start webhook server : cd apps/bank-webhook
+npm run dev
+
+run postgres db using docker locally 
+replace the DATABASE_URL in packages/db/.env 
