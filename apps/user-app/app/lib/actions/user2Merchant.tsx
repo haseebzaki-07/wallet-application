@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import prisma from "@repo/db/clients";
-// import {sendNotificationToMerchant} from "../../../../services/src/websocket/notification-server"
+import {sendNotificationToMerchant} from "../../../../services/src/websocket/notification-server"
 
 export async function user2MerchantTransfer(
   merchantId: number,
@@ -73,11 +73,11 @@ export async function user2MerchantTransfer(
 
 
     console.log("after u2m transfer");
-    // sendNotificationToMerchant(merchantId, {
-    //   title: 'New Payment Received',
-    //   message: `Payment of ${amount} for ${product}.`,
-    //   datetime: new Date(),
-    // });
+    sendNotificationToMerchant(merchantId, {
+      title: 'New Payment Received',
+      message: `Payment of ${amount} for ${product}.`,
+      datetime: new Date(),
+    });
 
     return { success: true, message: "Payment successful." };
   } catch (error) {

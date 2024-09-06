@@ -11,7 +11,7 @@ const InfoItem = ({ label, value }: any) => (
   </div>
 );
 
-async function getMerchantBalance() {
+export async function getMerchantBalance() {
   const session = await getServerSession(authOptions);
   const merchantBalance = await prisma.merchantBalance.findUnique({
       where : {
@@ -48,7 +48,7 @@ export default async function Dashboard() {
           <InfoItem label="Balance" value={`${balance / 100} INR`} />
         </div>
       </div>
-      <div>{/* <NotificationClient merchantId={id} /> */}</div>
+      <div><NotificationClient merchantId={id} /></div>
     </div>
   );
 }
