@@ -10,16 +10,60 @@ done : recoil in packages/db
 done : adding recoil in user-app 
 done : next-auth in user-app
 done : webhook-express server
-fix : webbhook/index.ts compilation
-fix : home page double appbar
+done : webbhook/index.ts compilation //use npm run dev
+fix : home page double appbar  
 done :added appbar client in layout.tsx
 done : dashboard/ transactions/ trasfer pages
 done : AddMoneyCard in components
-review : Select component
-fix : transfer page
-fix : login done after error and click on sign with credentials
-fix : balance is not displayed 
+done : Select component
+done : transfer page
+done : login done after error and click on sign with credentials
+done : balance is not displayed 
+done : cant login using seede data
+fix : adding money to the wallet createOnRamp route
+review : change backend route in production
+review : change db url in production
+fix : bank webbhook/index.ts
+done : locking in database
+done : p2ptransaction 
+fix : bankwebhook request working in curl but not in postman
+done : schema update for merchant
+done : bootstraping the merchant app
+start : google github provider
+fix : redirecting in both apps during sessions
+done : login with google
+fix : add zod type in merchant login also name
+done : qr code geenrator merchant app
+fix : home page fields in both apps 
+start : scanning qr logic 
+fix : qr scan using image
+done : qr scanner user app
+fix : $ to INR in scanning qr
+done : session issue in both apps
+
+done : user to merchant transfer
+fix : apply transactions logic in u2mtransfer
+fix : websockets connections
+done : adding cookies fails in login
+fix : merchant name in merchant app
+
+
+
+
+
 
 
 
 export default function component_name
+
+'
+
+curl -X POST https://localhost:3002/endpoint 
+-H "Content-Type: application/json" 
+-H "Host: localhost:3002" 
+-d '{"token": "348.80729378519203", "userId": "1", "amount": "100000"}'
+
+curl -X POST https://localhost:3002/endpoint -H "Content-Type: application/json" -d "{\"token\": \"curl -X POST https://localhost:3002/endpoint -H "Content-Type: application/json" -d "{\"token\": \"131.5214207594173\", \"user_identifier\": \"7\", \"amount\": \"100000\"}"\", \"user_identifier\": \"1\", \"amount\": \"100000\"}"
+
+
+curl -X POST https://localhost:3002/hdfcwebhook -H "Content-Type: application/json" -d "{\"token\": \"131.5214207594173\", \"user_identifier\": \"7\", \"amount\": \"100000\"}"

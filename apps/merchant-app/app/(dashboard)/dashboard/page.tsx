@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth";
+import React from "react";
 import { authOptions } from "../../lib/auth";
-import { getBalance } from "../transfer/page";
+import NotificationClient from "../../../components/NotificationClient";
+import prisma from "@repo/db/clients";
 
 const InfoItem = ({ label, value }: any) => (
   <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
@@ -8,17 +10,31 @@ const InfoItem = ({ label, value }: any) => (
     <span className="text-gray-900">{value || "N/A"}</span>
   </div>
 );
+
+async function getMerchantBalance() {
+  const session = await getServerSession(authOptions);
+  const merchantBalance = await prisma.merchantBalance.findUnique({
+      where : {
+        merchantId : Number(session.user.id),
+      },
+      select: {
+        balance: true, 
+      },
+      
+  })
+
+  return merchantBalance.balance ;
+}
+
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
-  const userName = await session?.user?.name;
-  const email = await session?.user?.email;
-  const accountId = await session?.user?.id;
-  const number = await session?.user?.number;
-  const balance = await getBalance();
+  const { name, email, id } = session.user; // assuming user object has these fields
+  const balance = await getMerchantBalance();
+
   return (
     <div>
       <p className="text-5xl text-[#6a51a6] font-bold mb-2 mt-10">
-        Hi {userName?.toUpperCase()}!
+        Hi {name?.toUpperCase()}!
       </p>
 
       <div className="text-center mb-4">
@@ -27,14 +43,12 @@ export default async function Dashboard() {
       <div className="max-w-md mx-auto bg-white shadow-lg rounded-xl overflow-hidden p-6 border border-gray-200">
         <div className="flex flex-col gap-4">
           <InfoItem label="Email" value={email} />
-          <InfoItem label="Account ID" value={accountId} />
-          <InfoItem label="Phone Number" value={number } />
-          <InfoItem
-            label="Balance"
-            value={`${balance?.amount / 100 + balance.locked / 100} INR`}
-          />
+          <InfoItem label="Account ID" value={id} />
+
+          <InfoItem label="Balance" value={`${balance / 100} INR`} />
         </div>
       </div>
+      <div>{/* <NotificationClient merchantId={id} /> */}</div>
     </div>
   );
 }

@@ -1,61 +1,72 @@
 import { getServerSession } from "next-auth";
-import AddMoneyCard from "../../../components/AddMoneyCard";
 
 import { authOptions } from "../../lib/auth";
 import prisma from "@repo/db/clients";
 import { BalanceCard } from "../../../components/BalanceCard";
 import { OnRampTransactions } from "../../../components/OnRampTransaction";
+import { AddMoneyCard } from "../../../components/AddMoneyCard";
 
-
-async function getBalance() {
+// Function to get the user's balance
+export async function getBalance() {
+  try {
     const session = await getServerSession(authOptions);
-   
 
-    const balance = await prisma.balance.findFirst({
-        where: {
-            userId: Number(session?.user?.id)
-        }
-    });
-    return {
-        amount: balance?.amount || 0,
-        locked: balance?.locked || 0
+    if (!session || !session.user || !session.user.id) {
+      throw new Error("User is not authenticated");
     }
-}
 
+    const userId = Number(session.user.id);
+    const balance = await prisma.balance.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    return {
+      amount: balance?.amount || 0,
+      locked: balance?.locked || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching balance:", error);
+    return { amount: 0, locked: 0 };
+  }
+}
 
 async function getOnRampTransactions() {
-    const session = await getServerSession(authOptions);
-    const txns = await prisma.onRampTransaction.findMany({
-        where: {
-            userId: Number(session?.user?.id)
-        }
-    });
-    return txns.map((t :any) => ({
-        time: t.startTime,
-        amount: t.amount,
-        status: t.status,
-        provider: t.provider
-    }))
+  const session = await getServerSession(authOptions);
+  const txns = await prisma.onRampTransaction.findMany({
+    where: {
+      userId: Number(session?.user?.id),
+    },
+  });
+  return txns.map((t: any) => ({
+    time: t.startTime,
+    amount: t.amount,
+    status: t.status,
+    provider: t.provider,
+  }));
 }
 
-export default async function() {
-    const balance = await getBalance();
-    const transactions = await getOnRampTransactions();
+export default async function () {
+  const balance = await getBalance();
+  const transactions = await getOnRampTransactions();
 
-    return <div className="w-screen">
-        <div className="text-4xl text-[#6a51a6] pt-8 mb-8 font-bold">
-            Transfer
+  return (
+    <div className="w-screen">
+      <div className="text-4xl text-[#6a51a6] pt-8 mb-8 font-bold">
+        Transfer
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 p-4">
+        <div>
+          <AddMoneyCard />
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 p-4">
-            <div>
-                <AddMoneyCard />
-            </div>
-            <div>
-                <BalanceCard amount={balance.amount} locked={balance.locked} />
-                <div className="pt-4">
-                    <OnRampTransactions transactions={transactions} />
-                </div>
-            </div>
+        <div>
+          <BalanceCard amount={balance.amount} locked={balance.locked} />
+          <div className="pt-4">
+            <OnRampTransactions transactions={transactions} />
+          </div>
         </div>
+      </div>
     </div>
+  );
 }

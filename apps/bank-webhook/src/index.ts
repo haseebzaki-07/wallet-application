@@ -1,11 +1,17 @@
 import express from "express";
 import db from "@repo/db/clients";
 const app = express();
-const PORT = 3003;
+const PORT = 3002;
 
 app.use(express.json())
+console.log('Server is set up and waiting for requests...');
+app.get("/", (req, res) => {
+    res.send("Server is working");
+});
 
-app.post("/hdfcWebhook", async (req, res) => {
+
+app.post("/hdfcwebhook", async (req, res) => {
+    console.log("Received request on /hdfcWebhook");
     //TODO: Add zod validation here?
     //TODO: HDFC bank should ideally send us a secret so we know this is sent by them
     const paymentInformation: {
@@ -17,7 +23,7 @@ app.post("/hdfcWebhook", async (req, res) => {
         userId: req.body.user_identifier,
         amount: req.body.amount
     };
-
+        
     try {
         await db.$transaction([
             db.balance.updateMany({
@@ -54,6 +60,6 @@ app.post("/hdfcWebhook", async (req, res) => {
 })
 
 
-app.listen(3000, ()=>{
+app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);  
 });

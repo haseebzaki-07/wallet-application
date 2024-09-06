@@ -1,6 +1,4 @@
-import { SidebarItem } from "../../components/SidebarItem";
-
-
+import { SidebarItem } from "../../components/Sidebar";
 export default function Layout({
   children,
 }: {
@@ -21,8 +19,7 @@ export default function Layout({
             icon={<TransactionsIcon />}
             title="Transactions"
           />
-          <SidebarItem href={"/p2p"} icon={<P2PTransferIcon />} title="P2P Transfer" />
-          <SidebarItem href={"/qrscan"} icon={<ScanQRIcon />} title="Scan a QR" />
+          <SidebarItem href={"/p2m"} icon={<P2PTransferIcon />} title="P2M Transfer" />
 
         </div>
       </div>
@@ -92,13 +89,4 @@ function P2PTransferIcon() {
   return <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
   </svg>
-}
-
-function ScanQRIcon() {
-  return <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75h4.5v1.5h-3v3h-1.5v-4.5zm12 0h4.5v4.5h-1.5v-3h-3v-1.5zm0 12h4.5v4.5h-4.5v-1.5h3v-3h1.5zm-12 0v4.5h4.5v-1.5h-3v-3h-1.5zM7.5 9.75h9v4.5h-9v-4.5z"/>
-</svg>
-
-
-
 }
