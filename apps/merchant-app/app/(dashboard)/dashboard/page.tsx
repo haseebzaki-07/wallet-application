@@ -1,7 +1,5 @@
 import { getServerSession } from "next-auth";
-import React from "react";
 import { authOptions } from "../../lib/auth";
-import NotificationClient from "../../../components/NotificationClient";
 import prisma from "@repo/db/clients";
 
 const InfoItem = ({ label, value }: any) => (
@@ -13,9 +11,11 @@ const InfoItem = ({ label, value }: any) => (
 
 export async function getMerchantBalance() {
   const session = await getServerSession(authOptions);
+  const merchantId = Number(session?.user?.id);
+  console.log("merchantId: " + merchantId);
   const merchantBalance = await prisma.merchantBalance.findUnique({
       where : {
-        merchantId : Number(session.user.id),
+        merchantId : merchantId,
       },
       select: {
         balance: true, 
@@ -29,7 +29,7 @@ export async function getMerchantBalance() {
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
   const { name, email, id } = session.user; // assuming user object has these fields
-  const balance = await getMerchantBalance();
+  // const balance = await getMerchantBalance();
 
   return (
     <div>
@@ -45,10 +45,10 @@ export default async function Dashboard() {
           <InfoItem label="Email" value={email} />
           <InfoItem label="Account ID" value={id} />
 
-          <InfoItem label="Balance" value={`${balance / 100} INR`} />
+          {/* <InfoItem label="Balance" value={${balance / 100} INR} /> */}
         </div>
       </div>
-      <div><NotificationClient merchantId={id} /></div>
+      
     </div>
   );
 }

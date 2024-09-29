@@ -37,7 +37,7 @@ export default function QrGenerator() {
   return (
     <div>
       <h2 className="text-4xl text-[#6a51a6] pt-8 mb-8 font-bold">QR Code Generator</h2>
-    <div className="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-md max-w-md mx-auto">
+    <div className="flex flex-col items-center p-6  rounded-lg shadow-lg border-grey-200 max-w-md mx-auto">
       
 
       <div className="w-full mb-4">

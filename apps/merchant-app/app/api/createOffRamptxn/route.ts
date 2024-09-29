@@ -21,6 +21,16 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const token = (Math.random() * 1000).toString();
 
     try {
+
+        await prisma.merchantBalance.update({
+            where :  {
+                merchantId : Number(session.user.id)
+            },
+            data: {
+                balance: {decrement : amount*100 },
+            },
+            
+        })
         await prisma.offRampTransaction.create({
             data: {
                 provider,
@@ -31,6 +41,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 amount: amount * 100,
             },
         });
+
 
         return NextResponse.json({ message: "Transaction created successfully" });
     } catch (error) {

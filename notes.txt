@@ -47,8 +47,9 @@ fix : websockets connections
 done : adding cookies fails in login
 fix : merchant name in merchant app
 done : offramping of merchant
-fix : decrease merchant balance for offramp txn
-
+done : decrease merchant balance for offramp txn
+fix : CI/CD
+fix : google_auth merchantId problem
 
 
 
@@ -58,14 +59,3 @@ fix : decrease merchant balance for offramp txn
 
 export default function component_name
 
-'
-
-curl -X POST https://localhost:3002/endpoint 
--H "Content-Type: application/json" 
--H "Host: localhost:3002" 
--d '{"token": "348.80729378519203", "userId": "1", "amount": "100000"}'
-
-curl -X POST https://localhost:3002/endpoint -H "Content-Type: application/json" -d "{\"token\": \"curl -X POST https://localhost:3002/endpoint -H "Content-Type: application/json" -d "{\"token\": \"131.5214207594173\", \"user_identifier\": \"7\", \"amount\": \"100000\"}"\", \"user_identifier\": \"1\", \"amount\": \"100000\"}"
-
-
-curl -X POST https://localhost:3002/hdfcwebhook -H "Content-Type: application/json" -d "{\"token\": \"131.5214207594173\", \"user_identifier\": \"7\", \"amount\": \"100000\"}"

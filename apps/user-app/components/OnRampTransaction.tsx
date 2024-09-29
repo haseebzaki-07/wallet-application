@@ -18,7 +18,7 @@ export const OnRampTransactions = ({
             </div>
         </Card>
     }
-    return <div className="h-[40vh] border-1 overflow-y-scroll" >
+    return <div className="h-[40vh] border-1 overflow-y-scroll shadow-lg border-grey-200" >
         <Card title="Recent OnRamp Transactions">
         <div className="pt-2">
             {transactions.map(t => <div className="flex justify-between">

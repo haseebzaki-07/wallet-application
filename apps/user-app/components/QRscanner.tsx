@@ -101,8 +101,8 @@ export default function QRScanner() {
 
   return (
     <div className="p-8">
-      <h1 className="text-4xl text-[#6a51a6] font-bold mb-8">Scan QR Code</h1>
-      <div className="bg-white shadow-md p-6 rounded-lg">
+      <h1 className="text-4xl text-[#6a51a6] font-bold mb-8 ">Scan QR Code</h1>
+      <div className=" p-6 rounded-lg shadow-lg border-grey-200">
         <button
           className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
           onClick={() => setIsScannerActive(true)}

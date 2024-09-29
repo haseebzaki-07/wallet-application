@@ -24,6 +24,7 @@ export const authOptions = {
 
         // If merchant exists and password matches, return the merchant
         if (merchant && await bcrypt.compare(credentials.password, merchant.password)) {
+          console.log("merchant id in db:" + merchant.id);
           return { id: merchant.id, email: merchant.email, name: merchant.name };
         }
 
@@ -35,7 +36,7 @@ export const authOptions = {
             auth_type: 'Credentials',
           },
         });
-
+        console.log("Merchant id when hnew user created" + newMerchant.id)
         return { id: newMerchant.id, email: newMerchant.email, name: newMerchant.name };
       },
     }),
@@ -69,17 +70,39 @@ export const authOptions = {
 
   callbacks: {
     async session({ session, token }: any) {
-      if (token?.sub) {
-        session.user.id = token.sub; // Assign the user ID from the token to the session
+      // Ensure that the session user ID comes from your database, not from Google’s large ID
+      
+      if (token.id) {
+        session.user.id = token.id;
       }
+    
       return session;
-    },
-    async jwt({ token, user }: any) {
-      // Attach user info to the token on sign-in
+    }
+    ,
+    async jwt({ token, user, account, profile }: any) {
+      // If a user is logging in for the first time, `user` will be defined
       if (user) {
+        // For CredentialsProvider (email/password)
         token.id = user.id;
       }
+    
+      // For GoogleProvider, map the Google user to the merchant in the database
+      if (account?.provider === 'google') {
+        const merchant = await prisma.merchant.findUnique({
+          where: { email: token.email as string }, // Assuming you store Google email in your database
+        });
+        
+        if (merchant) {
+          // Use the merchant's ID from the database
+          token.id = merchant.id;
+        } else {
+          // Handle case where Google login doesn't map to any merchant in the DB
+          console.error('No matching merchant found for Google account');
+        }
+      }
+    
       return token;
-    },
+    }
+    
   }
 };

@@ -3,7 +3,27 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import prisma from "@repo/db/clients";
-import {sendNotificationToMerchant} from "../../../../services/src/websocket/notification-server"
+const session = await getServerSession(authOptions);
+const clientId = Number(session?.user?.id);
+
+const ws = new WebSocket(`ws://localhost:8000?clientId=${clientId}`);
+
+ws.onopen = () => {
+  console.log(`WebSocket connection established for ${clientId}`);
+};
+
+ws.onmessage = (event) => {
+  // Handle messages received from the server
+  console.log("Message from server:", event.data);
+};
+
+ws.onerror = (error) => {
+  console.error("WebSocket Error:", error);
+};
+
+ws.onclose = () => {
+  console.log("WebSocket connection closed.");
+};
 
 export async function user2MerchantTransfer(
   merchantId: number,
@@ -73,11 +93,13 @@ export async function user2MerchantTransfer(
 
 
     console.log("after u2m transfer");
-    sendNotificationToMerchant(merchantId, {
-      title: 'New Payment Received',
-      message: `Payment of ${amount} for ${product}.`,
-      datetime: new Date(),
-    });
+    const notificationMessage = {
+      notificationMessage: `Payment received of INR  ${amount} for ${product}.`,
+      
+    };
+
+    ws.send(JSON.stringify(notificationMessage)); 
+ 
 
     return { success: true, message: "Payment successful." };
   } catch (error) {
