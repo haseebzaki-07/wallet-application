@@ -2,9 +2,10 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "../../lib/auth";
 import prisma from "@repo/db/clients";
-import { getMerchantBalance } from "../dashboard/page";
+
 import { TransferMoneyCard } from "../../../components/TransferMoney";
 import { OffRampTransactions } from "../../../components/OffRampTxn";
+import { getMerchantBalance } from "../dashboard/serverDashboard";
 
 
 

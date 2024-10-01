@@ -3,7 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 
-import axios from "axios";
+
 import { useSession } from "next-auth/react";
 import { user2MerchantTransfer } from "../app/lib/actions/user2Merchant";
 

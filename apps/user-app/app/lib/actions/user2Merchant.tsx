@@ -3,27 +3,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import prisma from "@repo/db/clients";
-const session = await getServerSession(authOptions);
-const clientId = Number(session?.user?.id);
-
-const ws = new WebSocket(`ws://localhost:8000?clientId=${clientId}`);
-
-ws.onopen = () => {
-  console.log(`WebSocket connection established for ${clientId}`);
-};
-
-ws.onmessage = (event) => {
-  // Handle messages received from the server
-  console.log("Message from server:", event.data);
-};
-
-ws.onerror = (error) => {
-  console.error("WebSocket Error:", error);
-};
-
-ws.onclose = () => {
-  console.log("WebSocket connection closed.");
-};
+import { io } from "socket.io-client";
+const socket = io('http://localhost:8001');
 
 export async function user2MerchantTransfer(
   merchantId: number,
@@ -38,49 +19,45 @@ export async function user2MerchantTransfer(
     if (!userId) {
       return { success: false, message: "User not found." };
     }
-    console.log("user id: " + userId);
+
     // Validate input parameters
     if (!product || amount <= 0) {
       return { success: false, message: "Invalid product or amount." };
     }
-    const userBalanace = await prisma.balance.findUnique({
-      where : {
-        userId : userId,
-      }
-    })
-    console.log("user balanace: " + userBalanace.amount);
 
-    if(!userBalanace.amount || amount <= 0) {
+    const userBalance = await prisma.balance.findUnique({
+      where: { userId: userId },
+    });
+
+    if (!userBalance?.amount || userBalance.amount < amount) {
       return { success: false, message: "Insufficient funds." };
     }
+
+    // Deduct from user's balance
     await prisma.balance.update({
       where: { userId: userId },
-      data: { amount: { decrement: amount * 100 } }, 
-    })
+      data: { amount: { decrement: amount * 100 } },
+    });
+
     // Find or initialize the merchant balance
     let merchantBalance = await prisma.merchantBalance.findUnique({
       where: { merchantId: merchantId },
     });
 
-    // If the merchant balance doesn't exist, create it
     if (!merchantBalance) {
       merchantBalance = await prisma.merchantBalance.create({
-        data: {
-          merchantId: merchantId,
-          balance: 0,
-        },
+        data: { merchantId: merchantId, balance: 0 },
       });
     }
-    console.log("merchabt balancve : " + merchantBalance.balance);
-    // Calculate the new balance and update it
-    const newBalance = merchantBalance.balance + amount * 100; // Assuming amount is in cents
 
-    console.log("new balance : " + newBalance);
+    // Update merchant's balance
+    const newBalance = merchantBalance.balance + amount * 100;
     await prisma.merchantBalance.update({
       where: { merchantId: merchantId },
       data: { balance: newBalance },
     });
 
+    // Record the transfer in user-to-merchant transfers
     await prisma.usertoMerchantTransfer.create({
       data: {
         amount,
@@ -91,21 +68,21 @@ export async function user2MerchantTransfer(
       },
     });
 
+    // Send WebSocket notification to the merchant
 
-    console.log("after u2m transfer");
-    const notificationMessage = {
-      notificationMessage: `Payment received of INR  ${amount} for ${product}.`,
+    socket.emit('payment_made', {
+      merchantId, // The merchant receiving the payment
+      amount, // The payment amount
       
-    };
+      userId: 'user-123', // Some user ID
+    });
 
-    ws.send(JSON.stringify(notificationMessage)); 
- 
+    console.log(`Payment of $${amount} made to merchant ${merchantId}`);
+    
 
     return { success: true, message: "Payment successful." };
   } catch (error) {
-    // Log the detailed error
     console.error("Transaction Error:", error);
-    // Return an error response in case of failure
     return { success: false, message: "Transaction failed. Please try again." };
   }
 }
