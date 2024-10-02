@@ -19,6 +19,8 @@ export async function getMerchantBalance() {
 // This server component will render the basic information like balance
 export default async function ServerDashboard() {
   const balance = await getMerchantBalance();
+  const session = await getServerSession(authOptions);
+  const merchantId = session?.user?.id;
 
   return (
     <div className="max-w-md mx-auto bg-white shadow-lg rounded-xl overflow-hidden p-6 border border-gray-200">
@@ -26,6 +28,10 @@ export default async function ServerDashboard() {
         <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
           <span className="text-gray-700 font-semibold">Balance:</span>
           <span className="text-gray-900">{balance / 100} INR</span> {/* Assuming balance is stored in cents */}
+        </div>
+        <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+          <span className="text-gray-700 font-semibold">Merchant Account:</span>
+          <span className="text-gray-900">{merchantId} </span> {/* Assuming balance is stored in cents */}
         </div>
       </div>
     </div>

@@ -50,6 +50,7 @@ done : offramping of merchant
 done : decrease merchant balance for offramp txn
 fix : CI/CD
 fix : google_auth merchantId problem
+done : real time notifications
 
 
 

@@ -73,11 +73,11 @@ export async function user2MerchantTransfer(
     socket.emit('payment_made', {
       merchantId, // The merchant receiving the payment
       amount, // The payment amount
-      
-      userId: 'user-123', // Some user ID
+      product,
+      userId, // Some user ID
     });
 
-    console.log(`Payment of $${amount} made to merchant ${merchantId}`);
+    console.log(`Payment of ${amount} for ${product} made to merchant ${merchantId}`);
     
 
     return { success: true, message: "Payment successful." };

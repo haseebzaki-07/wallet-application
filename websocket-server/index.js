@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
 
   // Handle payment notification from user app
   socket.on('payment_made', (data) => {
-    const { merchantId, amount, userId } = data;
+    const { merchantId, amount, userId, product } = data;
     console.log(JSON.stringify(data));
 
     // Send payment notification to the merchant
@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
       io.to(merchants[merchantId]).emit('payment_notification', {
         userId,
         amount,
+        product
       });
       console.log(`Payment notification sent to merchant ${merchantId}`);
     } else {
