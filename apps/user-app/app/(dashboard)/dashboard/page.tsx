@@ -24,10 +24,10 @@ export default async function Dashboard() {
       <div className="text-center mb-4">
         <p className="text-gray-600">Welcome back!</p>
       </div>
-      <div className="max-w-md mx-auto bg-white shadow-lg rounded-xl overflow-hidden p-6 border border-gray-200">
+      <div className="min-w-[20vw] mx-auto bg-white shadow-lg rounded-xl overflow-hidden p-6 border border-gray-200">
         <div className="flex flex-col gap-4">
           <InfoItem label="Email" value={email} />
-          <InfoItem label="Account ID" value={accountId} />
+          <InfoItem label="Account ID" value={Number(accountId)} />
           <InfoItem label="Phone Number" value={number } />
           <InfoItem
             label="Balance"

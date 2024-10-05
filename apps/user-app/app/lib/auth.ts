@@ -64,6 +64,7 @@ export const authOptions = {
               id: existingUser.id.toString(),
               name: existingUser.name,
               email: existingUser.email,
+              number : existingUser.number
             };
           }
 
@@ -92,6 +93,7 @@ export const authOptions = {
             id: user.id.toString(),
             name: user.name,
             email: user.email,
+            number : user.number
           };
         } catch (e) {
           console.error(e);
@@ -125,15 +127,19 @@ export const authOptions = {
   callbacks: {
     async session({ session, token }: any) {
       if (token?.id) {
-        session.user.id = token.id; // Assign the user ID from the token to the session
+        session.user.id = token.id; // Add the user ID from the token to the session
+      }
+      if (token?.number) {
+        session.user.number = token.number; // Add the phone number to the session
       }
       return session;
     },
     async jwt({ token, user }: any) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id; // Store user ID in the JWT token
+        token.number = user.number; // Store user phone number in the JWT token
       }
       return token;
     },
-  },
+  }
 };

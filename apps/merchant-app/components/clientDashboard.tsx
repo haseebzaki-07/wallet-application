@@ -8,17 +8,31 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Establish a connection to the WebSocket server
 const socket = io('http://localhost:8001');
+const notificationSound = '/notification-sound.mp3';
 
 export default function ClientDashboard({ merchantId }: { merchantId: number }) {
+
+  const playNotificationSound = () => {
+    const audio = new Audio(notificationSound);
+    audio.play().catch(error => {
+      console.error('Error playing notification sound:', error);
+    });
+  };
 
 
   useEffect(() => {
     socket.emit('merchant_login', merchantId); // Replace with actual merchant ID
 
+    
+
     // Listen for payment notifications
     socket.on('payment_notification', (data) => {
       const { userId, amount, product } = data;
       console.log("data received for merchant ", data )
+      
+      const message = `You received INR ${amount} for ${product} from user ${userId}`;
+      
+
       toast.info(`Received INR${amount} for ${product} from user ${userId}`, {
         position: "top-right",
         autoClose: 5000, // Automatically close after 5 seconds
@@ -27,8 +41,14 @@ export default function ClientDashboard({ merchantId }: { merchantId: number }) 
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
+        onOpen : ()=> {
+          playNotificationSound();
+        }
+      
       });
     })
+
+    
   
     return () => {
       socket.off('payment_notification');

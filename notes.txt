@@ -43,7 +43,7 @@ done : session issue in both apps
 
 done : user to merchant transfer
 fix : apply transactions logic in u2mtransfer
-fix : websockets connections
+done : websockets connections
 done : adding cookies fails in login
 fix : merchant name in merchant app
 done : offramping of merchant
@@ -51,7 +51,7 @@ done : decrease merchant balance for offramp txn
 fix : CI/CD
 fix : google_auth merchantId problem
 done : real time notifications
-
+add : sound notification in browser
 
 
 
