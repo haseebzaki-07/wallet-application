@@ -8,17 +8,24 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Establish a connection to the WebSocket server
 const socket = io('http://localhost:8001');
-const notificationSound = '/notification-sound.mp3';
+const speakNotification = (message: string) => {
+  if ('speechSynthesis' in window) {
+    try {
+      const speech = new SpeechSynthesisUtterance(message);
+      speech.lang = "en-US"; // You can set this to other locales if needed
+      speech.pitch = 1;      // Set pitch (0 to 2, default is 1)
+      speech.rate = 1;       // Set rate of speech (0.1 to 10, default is 1)
+      speech.volume = 1;     // Set volume (0 to 1)
 
+      window.speechSynthesis.speak(speech);  // Speak the message
+    } catch (error) {
+      console.log("Error with speech synthesis:", error);
+    }
+  } else {
+    console.log("Speech synthesis not supported in this browser.");
+  }
+};
 export default function ClientDashboard({ merchantId }: { merchantId: number }) {
-
-  const playNotificationSound = () => {
-    const audio = new Audio(notificationSound);
-    audio.play().catch(error => {
-      console.error('Error playing notification sound:', error);
-    });
-  };
-
 
   useEffect(() => {
     socket.emit('merchant_login', merchantId); // Replace with actual merchant ID
@@ -33,8 +40,8 @@ export default function ClientDashboard({ merchantId }: { merchantId: number }) 
       const message = `You received INR ${amount} for ${product} from user ${userId}`;
       
 
-      toast.info(`Received INR${amount} for ${product} from user ${userId}`, {
-        position: "top-right",
+      toast.info(`Received INR ${amount} for ${product} from user ${userId}`, {
+        position: "top-right", 
         autoClose: 5000, // Automatically close after 5 seconds
         hideProgressBar: false,
         closeOnClick: true,
@@ -42,7 +49,7 @@ export default function ClientDashboard({ merchantId }: { merchantId: number }) 
         draggable: true,
         progress: undefined,
         onOpen : ()=> {
-          playNotificationSound();
+          speakNotification(message)
         }
       
       });
