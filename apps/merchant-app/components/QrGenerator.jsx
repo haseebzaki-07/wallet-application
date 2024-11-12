@@ -1,5 +1,6 @@
 "use client";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 import { useState } from "react";
 import QRCode from "qrcode";
 import { useSession } from "next-auth/react";
@@ -13,12 +14,12 @@ export default function QrGenerator() {
 
   const generateQRCode = async () => {
     if (!commodity || !amount) {
-      alert("Please enter both commodity and amount.");
+      toast.error("Please enter both commodity and amount.");
       return;
     }
 
     if (!merchantId) {
-      alert("Unable to retrieve merchant ID. Please log in.");
+      toast.error("Unable to retrieve merchant ID. Please log in.");
       return;
     }
 
@@ -36,6 +37,7 @@ export default function QrGenerator() {
 
   return (
     <div>
+      <ToastContainer/>
       <h2 className="text-4xl text-[#6a51a6] pt-8 mb-8 font-bold">QR Code Generator</h2>
     <div className="flex flex-col items-center p-6  rounded-lg shadow-lg border-grey-200 max-w-md mx-auto">
       

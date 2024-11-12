@@ -29,75 +29,68 @@ export const authOptions = {
         },
         password: {
           label: 'Password',
-          placeholder: 'Enter your password',
           type: 'password',
+          placeholder: 'Enter your password',
         },
         name: {
-          label: 'Name',
+          label: 'Name (for signup)',
           type: 'text',
-          placeholder: 'Enter your name (only for signup)',
+          placeholder: 'Enter your name',
         },
         email: {
-          label: 'Email',
+          label: 'Email (for signup)',
           type: 'text',
-          placeholder: 'Enter your email (only for signup)',
+          placeholder: 'Enter your email',
         },
       },
       async authorize(credentials) {
-        const { phone, password, name, email }: any = credentials;
+        const { phone, password, name, email } = credentials || {};
 
-        const existingUser = await db.user.findFirst({
-          where: { number: phone },
-        });
+        try {
+          // Attempt login if the user exists
+          const existingUser = await db.user.findUnique({ where: { number: phone } });
 
-        if (existingUser) {
-          const parsed = loginSchema.safeParse({ phone, password });
+          if (existingUser) {
+            // Validate login credentials
+            const parsed = loginSchema.safeParse({ phone, password });
+            if (!parsed.success) {
+              throw new Error('Invalid login data. ' + parsed.error.errors.map(e => e.message).join(', '));
+            }
 
-          if (!parsed.success) {
-            throw new Error(parsed.error.errors.map((e) => e.message).join(', '));
-          }
+            // Check password
+            const passwordValid = await bcrypt.compare(password, existingUser.password);
+            if (!passwordValid) throw new Error('Invalid phone number or password.');
 
-          const passwordValidation = await bcrypt.compare(password, existingUser.password);
-
-          if (passwordValidation) {
+            // Successful login
             return {
               id: existingUser.id.toString(),
               name: existingUser.name,
               email: existingUser.email,
-              number : existingUser.number
+              number: existingUser.number,
+            };
+          } else {
+            // User doesn't exist: proceed with signup
+            const parsed = signupSchema.safeParse({ phone, password, name, email });
+            if (!parsed.success) {
+              throw new Error('Invalid signup data. ' + parsed.error.errors.map(e => e.message).join(', '));
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const newUser = await db.user.create({
+              data: { number: phone, password: hashedPassword, name, email },
+            });
+
+            // Successful signup
+            return {
+              id: newUser.id.toString(),
+              name: newUser.name,
+              email: newUser.email,
+              number: newUser.number,
             };
           }
-
-          throw new Error('Invalid phone number or password.');
-        }
-
-        const parsed = signupSchema.safeParse({ phone, password, name, email });
-
-        if (!parsed.success) {
-          throw new Error(parsed.error.errors.map((e) => e.message).join(', '));
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        try {
-          const user = await db.user.create({
-            data: {
-              number: phone,
-              password: hashedPassword,
-              name,
-              email,
-            },
-          });
-
-          return {
-            id: user.id.toString(),
-            name: user.name,
-            email: user.email,
-            number : user.number
-          };
-        } catch (e) {
-          console.error(e);
-          throw new Error('Failed to create user.');
+        } catch (error) {
+          console.error('Error in authorize:', error.message);
+          throw new Error('Authentication failed. ' + error.message);
         }
       },
     }),
@@ -105,7 +98,7 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token-user`,
+      name: 'next-auth.session-token-user',
       options: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -114,7 +107,7 @@ export const authOptions = {
       },
     },
     csrfToken: {
-      name: `next-auth.csrf-token-user`,
+      name: 'next-auth.csrf-token-user',
       options: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -123,23 +116,18 @@ export const authOptions = {
       },
     },
   },
- 
   callbacks: {
-    async session({ session, token }: any) {
-      if (token?.id) {
-        session.user.id = token.id; // Add the user ID from the token to the session
-      }
-      if (token?.number) {
-        session.user.number = token.number; // Add the phone number to the session
-      }
+    async session({ session, token }) {
+      if (token?.id) session.user.id = token.id; // Attach user ID to session
+      if (token?.number) session.user.number = token.number; // Attach phone number
       return session;
     },
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id; // Store user ID in the JWT token
-        token.number = user.number; // Store user phone number in the JWT token
+        token.number = user.number; // Store phone number in JWT
       }
       return token;
     },
-  }
+  },
 };

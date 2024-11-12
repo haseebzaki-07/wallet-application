@@ -4,12 +4,7 @@ import { authOptions } from "../../lib/auth";
 import prisma from "@repo/db/clients";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest, res: NextResponse) {
-   
-    if (req.method !== "POST") {
-        return NextResponse.json({ message: "Method not allowed" });
-    }
-  
+export async function POST(req: NextRequest) {
 
     const session = await getServerSession(authOptions);
     if (!session?.user || !session.user?.id) {
@@ -31,7 +26,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             },
         });
 
-        return NextResponse.json({ message: "Transaction created successfully" });
+        return NextResponse.json({ message: "Transaction created successfully" , token });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ message: "Failed to create transaction" });

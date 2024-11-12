@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.19.0"
+    "@prisma/client": "^5.22.0"
   },
   "exports": {
     "./clients": "./index.ts"
@@ -19,6 +19,6 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
-    "prisma": "^5.19.0"
+    "prisma": "^5.22.0"
   }
 }

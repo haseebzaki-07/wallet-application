@@ -26,30 +26,37 @@ app.post("/hdfcwebhook", async (req, res) => {
         
     try {
         await db.$transaction([
-            db.balance.updateMany({
+            // Upsert the balance record
+            db.balance.upsert({
                 where: {
-                    userId: Number(paymentInformation.userId)
+                    userId: Number(paymentInformation.userId),
                 },
-                data: {
+                create: {
+                    userId: Number(paymentInformation.userId),
+                    amount: Number(paymentInformation.amount), // Start with the transaction amount if it's a new balance
+                    locked: 0, // Start with the transaction amount if it's a new balance
+                },
+                update: {
                     amount: {
-                        // You can also get this from your DB
-                        increment: Number(paymentInformation.amount)
+                        increment: Number(paymentInformation.amount), // Increment if the balance already exists
                     }
                 }
             }),
+        
+            // Update the onRampTransaction status
             db.onRampTransaction.updateMany({
                 where: {
-                    token: paymentInformation.token
+                    token: paymentInformation.token,
                 }, 
                 data: {
                     status: "Success",
                 }
             })
         ]);
-
+        
         res.json({
-            message: "Captured"
-        })
+            message: "Captured",
+        });
     } catch(e) {
         console.error(e);
         res.status(411).json({

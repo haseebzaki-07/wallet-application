@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { useSession } from "next-auth/react";
 import { user2MerchantTransfer } from "../app/lib/actions/user2Merchant";
@@ -35,14 +36,14 @@ export default function QRScanner() {
         setMerchantId(match[3] || "");
         setIsScannerActive(false); // Deactivate scanner after successful scan
       } else {
-        alert("Invalid QR Code format");
+        toast.error("Invalid QR Code format");
       }
     }
   };
 
   const handleError = (err: Error) => {
     console.error("QR Code Scan Error:", err);
-    alert("Error scanning QR Code. Please try again.");
+    toast.error("Error scanning QR Code. Please try again.");
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,13 +86,13 @@ export default function QRScanner() {
               if (code) {
                 handleScan({ text: code.data });
               } else {
-                alert("No QR code found in the image.");
+                toast.error("No QR code found in the image.");
               }
             };
           })
           .catch((err) => {
             console.error("Failed to load jsQR library", err);
-            alert("Error scanning the image.");
+            toast.error("Error scanning the image.");
           });
       };
 
@@ -101,6 +102,7 @@ export default function QRScanner() {
 
   return (
     <div className="p-8">
+      <ToastContainer />
       <h1 className="text-4xl text-[#6a51a6] font-bold mb-8 ">Scan QR Code</h1>
       <div className=" p-6 rounded-lg shadow-lg border-grey-200">
         <button
@@ -174,12 +176,12 @@ export default function QRScanner() {
 
             
                 if (response.success) {
-                  alert("Payment successful!");
+                  toast.success("Payment successful!");
                 } else {
-                  alert(response.message || "Payment failed.");
+                  toast.error(response.message || "Payment failed.");
                 }
               } catch (error) {
-                alert("An unexpected error occurred. Please try again.");
+                toast.error("An unexpected error occurred. Please try again.");
                 console.error(error);
               }
             }}
